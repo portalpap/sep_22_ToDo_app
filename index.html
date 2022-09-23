@@ -27,7 +27,9 @@
         </div>
             <div class="centre">
                 <div class="left">
-                    <input class="lftItm" type="text" placeholder="Enter List Name...">
+                    <input id="liTextInput" class="lftItm newContent" type="text" onchange="openLiBtn()" oninput="updateLiText(this.value)" placeholder="Enter List Name...">
+                        <button onclick="closeLiBtn()" id="addLiBtn">Add "listNameHere" +</button>
+                        <div class="seperate"></div>
                     <div class="listCol">
                         <div class="lftItm listLinkBar">Placeholder</div>
                         <div class="lftItm listLinkBar">Placeholder</div>
@@ -37,23 +39,51 @@
                 <div class="right">
                     <h1>Placeholder</h1>
                     <div class="underline"></div>
-                    <div class="rgtItm "><input type="checkbox">item objective here</div>
+                    <div class="rgtItm"><input type="checkbox">item objective here</div>
                     <div class="rgtItm"><input type="checkbox">another objective here</div>
                 </div>
             </div>
     </div>
 </body>
 <style>
-
+    #addLiBtn{
+        height: 0em;
+        overflow: hidden;
+        display: block;
+        transition: 0s;
+        transform: translateY(-6px);
+        transition: .2s;
+    }
+    #addLiBtn:hover{
+        transform: translateY(0);
+        height: 2.5em;
+        display: block;
+    }
+    .seperate{
+        margin-bottom: 10px;
+    }
+    input[type="checkbox"]{
+        height: 75%;
+        aspect-ratio: 1/1;
+        margin: 5px;
+        box-shadow: 0px 0px 0px 1px rgba(0,0,0,0.75), 0px 0px 2px 1px rgba(0,0,0,0.75) inset;
+    }
+    :root{
+        font-family:Verdana, Geneva, Tahoma, sans-serif;
+        --priCol: rgb(0, 75, 146);
+    }
+    .right{
+       padding: 0 20px;
+    }
     .rgtItm{
         max-width: 100%;
         height: 42px;
-        padding-left: 10px;
+        /* padding-left: 10px; */
         display: flex;
         justify-content: left;
         align-items: center;
         border: #333 solid 1px;
-        margin-left: 20px;
+        box-shadow: 0px 0px 0px .5px rgba(0,0,0,0.75);
     }
     .lftItm{
         max-width: 100%;
@@ -69,12 +99,16 @@
     }
     .listLinkBar{
         background-color: rgb(106, 109, 112);
-        margin-bottom: 1px;
+        margin: .5px 0;
+        transition: .2s;
     }
-    input{
+    .listLinkBar:hover{
+        transform: translateX(5%);
+    }
+    input[type="text"]{
+        z-index: 1;
         color: rgba(51, 51, 51,.5);
         border: none;
-        margin-bottom: 10px;
         box-shadow: 0px 0px 1px 1px rgba(0,0,0,0.75) inset;
     }
     .left{
@@ -96,7 +130,7 @@
 
     body{
         background-color: rgb(41, 41, 41);
-        margin: 15px;
+        margin: 15px 1%;
         height: calc(100vh - 30px);
     }
     .maintainer{
@@ -117,11 +151,11 @@
         align-items: center;
         justify-content: space-between;
     }
-    .bi{
-        margin: 0 6px;
+    .navhead .bi{
+        margin: 0c 6px;
         transition: .2s;
     }
-    .bi:hover{
+    .navhead .bi:hover{
         transform: scale(120%);
         filter: brightness(200%);
     }
