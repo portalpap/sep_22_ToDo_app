@@ -28,19 +28,25 @@
             <div class="centre">
                 <div class="left">
                     <input id="liTextInput" class="lftItm newContent" type="text" onchange="openLiBtn()" oninput="updateLiText(this.value)" placeholder="Enter List Name...">
-                        <button onclick="closeLiBtn()" id="addLiBtn">Add "listNameHere" +</button>
+                        <button onclick="closeLiBtn(), addList()" id="addLiBtn">Add "listNameHere" +</button>
                         <div class="seperate"></div>
-                    <div class="listCol">
+                        
+                    <div id="listCol">
                         <div class="lftItm listLinkBar">Placeholder</div>
                         <div class="lftItm listLinkBar">Placeholder</div>
                         <div class="lftItm listLinkBar">Placeholder</div>
                     </div>
+
                 </div>
                 <div class="right">
-                    <h1>Placeholder</h1>
+
+                    <h1 id="rightTitle">Placeholder</h1>
                     <div class="underline"></div>
-                    <div class="rgtItm"><input type="checkbox">item objective here</div>
-                    <div class="rgtItm"><input type="checkbox">another objective here</div>
+
+                    <div id="taskCol">
+                        <div class="rgtItm"><input value="0" type="checkbox" onchange="updateCheckbox(this.value, this.checked)">item objective here</div>
+                        <div class="rgtItm"><input type="checkbox">another objective here</div>
+                    </div>
                 </div>
             </div>
     </div>
@@ -54,10 +60,11 @@
         transform: translateY(-6px);
         transition: .2s;
     }
-    #addLiBtn:hover{
-        transform: translateY(0);
-        height: 2.5em;
-        display: block;
+    .active{
+        color: rgb(106, 109, 112);
+        background-color: rgb(230, 230, 230);
+        transition: .2s;
+        margin-bottom: 1px;
     }
     .seperate{
         margin-bottom: 10px;
@@ -93,17 +100,18 @@
         justify-content: left;
         align-items: center;
     }
-    .listCol{
+    #listCol{
         display: flex;
         flex-direction: column;
     }
-    .listLinkBar{
+    .listLinkBar:not(.active){
         background-color: rgb(106, 109, 112);
-        margin: .5px 0;
+        margin-bottom: 1px;
         transition: .2s;
     }
-    .listLinkBar:hover{
+    .listLinkBar:not(.active):hover{
         transform: translateX(5%);
+        padding-left: 1em;
     }
     input[type="text"]{
         z-index: 1;
