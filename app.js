@@ -16,8 +16,33 @@ let listObjs = {
 };
 let currentLi = 0;
 
-addList("new List");
-load();
+load("INIT");
+
+function load(Ltype){
+    if(Ltype == "INIT"){
+        console.log(localStorage);
+        listObjs = JSON.parse(localStorage.getItem(localStorage.key(0)));
+        console.log("INIT: loaded \"" + localStorage.key(0) + "\"");
+    }
+    else if(Ltype != undefined)
+        autoSave();
+
+    listCol.innerHTML = "";
+    taskCol.innerHTML = "";
+    for (let i = 0; i < Object.keys(listObjs).length; i++) {
+        if(i == currentLi)
+            temp = 'active'
+        else
+            temp = ""
+        listCol.innerHTML += '<div class="lftItm ' + temp + ' listLinkBar" id="'+ i +
+        '" onclick="switchLiTab(this.id)">' + listObjs[i].name + '</div>';
+    }
+    for (let i = 0; i < listObjs[currentLi].todos.length; i++){
+        taskCol.innerHTML +=  '<div class="rgtItm"><input value="'+ i +
+        '" type="checkbox" onchange="updateCheckbox(this.value, this.checked)"">' + listObjs[currentLi].todos[i].inner + '</div>';
+    } 
+
+}
 
 function openLiBtn(){
     if(liText != ""){
@@ -47,25 +72,21 @@ function addList(liName){
         liName = liText;
     tempObj = {name: liName, todos: [{inner: "This is a example task!", completed: false}]};
     listObjs[Object.keys(listObjs).length] = tempObj;
-    load();
+    load("WITH SAVE");
 }
 
-function load(){
-    listCol.innerHTML = "";
-    taskCol.innerHTML = "";
-    for (let i = 0; i < Object.keys(listObjs).length; i++) {
-        if(i == currentLi)
-            temp = 'active'
-        else
-            temp = ""
-        listCol.innerHTML += '<div class="lftItm ' + temp + ' listLinkBar" id="'+ i +
-        '" onclick="switchLiTab(this.id)">' + listObjs[i].name + '</div>';
-    }
-    for (let i = 0; i < listObjs[currentLi].todos.length; i++){
-        taskCol.innerHTML +=  '<div class="rgtItm"><input value="'+ i +
-        '" type="checkbox" onchange="updateCheckbox(this.value, this.checked)"">' + listObjs[currentLi].todos[i].inner + '</div>';
-    } 
+function save(){
+    localStorage.setItem("newSave", JSON.stringify(listObjs));
+    console.log("SAVE: Sucessfuly saved:")
+    console.log(JSON.parse(localStorage.getItem("newSave")));
 }
+
+function autoSave(){
+    localStorage.setItem("autoSave", JSON.stringify(listObjs));
+    console.log("AUTOSAVE: Sucessfuly saved:")
+    console.log(JSON.parse(localStorage.getItem("autoSave")));
+}
+
 
 function updateCheckbox(thisId, thisBool){
     listObjs[currentLi].todos[thisId].completed = thisBool;
@@ -75,6 +96,11 @@ function updateCheckbox(thisId, thisBool){
 function switchLiTab(value){
     currentLi = value;
     load();
+}
+
+
+function editAt(tObj){
+    
 }
 
 function debug(value){
