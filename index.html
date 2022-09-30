@@ -12,6 +12,15 @@
 </head>
 <body>
     <!-- <div class="maintainer animate__animated animate__zoomInDown"> -->
+    <div id="ri-click-menu">
+        <div class="ri-click-item">     <div class="bi sep bi-pencil-fill"> option 1</div>    </div>
+        <div class="ri-click-item">     <div class="bi sep bi-trash-fill">  option 2</div>    </div>
+        <div class="ri-click-item">     <div class="bi sep bi-heart">       option 3</div>    </div>
+        <div class="ri-click-item">     <div class="bi sep bi-image">       option 4</div>    </div>
+        <div class="ri-click-item">     <div class="bi sep bi-gear-fill">   option 5</div>    </div>
+        <div class="ri-click-item">     <div class="bi sep bi-share-fill">  option 6</div>    </div>
+    </div>
+
     <div class="maintainer ">
         <div class="navhead">
             <h1>ToDo App</h1>
@@ -40,7 +49,6 @@
 
                 </div>
                 <div class="right">
-
                     <h1 id="rightTitle">
                         Placeholder
                         <svg onclick="save()" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-save-fill" viewBox="0 0 16 16">
@@ -58,6 +66,23 @@
     </div>
 </body>
 <style>
+    #ri-click-menu{
+        background-color: rgb(249, 249, 249);
+        width: fit-content;
+        padding: 3px 10px;
+        border-radius: 5px;
+        position: fixed;
+        box-shadow: 0px 7px 25px -1px rgba(0,0,0,0.25);
+        z-index: 9999;
+        display: none;
+        /* transform: scale(0); */
+    }
+    .ri-click-item{
+        color: #333;
+        width: 100%;
+        margin: 5px 0;
+    }
+
     #addLiBtn{
         height: 0em;
         overflow: hidden;
@@ -165,11 +190,11 @@
         align-items: center;
         justify-content: space-between;
     }
-    .bi{
+    .bi:not(.sep){
         margin: 0c 6px;
         transition: .2s;
     }
-    .bi:hover{
+    .bi:not(.sep):hover{
         transform: scale(120%);
         filter: brightness(200%);
     }

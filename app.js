@@ -3,6 +3,16 @@ let listCol = document.getElementById("listCol");
 let taskCol = document.getElementById("taskCol");
 let liBtn = document.getElementById("addLiBtn");
 let liInput = document.getElementById("liTextInput");
+
+const rcMenu = document.getElementById("ri-click-menu");
+document.onmousedown = function(event) {
+    event.preventDefault();
+    if (event.which == 3) {
+        // alert("noo");
+        rightClick(event);
+    }
+}
+
 let tempObj = {};
 let temp;
 let listObjs = { 
@@ -42,6 +52,13 @@ function load(Ltype){
         '" type="checkbox" onchange="updateCheckbox(this.value, this.checked)"">' + listObjs[currentLi].todos[i].inner + '</div>';
     } 
 
+}
+
+function rightClick(event){
+    rcMenu.style.display = "block";
+
+    rcMenu.style.left = event.clientX + "px";
+    rcMenu.style.top = event.clientY + "px";
 }
 
 function openLiBtn(){
