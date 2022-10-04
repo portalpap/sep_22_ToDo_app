@@ -12,16 +12,21 @@
 </head>
 <body>
     <!-- <div class="maintainer animate__animated animate__zoomInDown"> -->
-    <div id="ri-click-menu">
+    <div id="rcMenu2" class="ri-click-menu">
         <div class="ri-click-item">     <div class="bi sep bi-pencil-fill"> option 1</div>    </div>
         <div class="ri-click-item">     <div class="bi sep bi-trash-fill">  option 2</div>    </div>
-        <div class="ri-click-item">     <div class="bi sep bi-heart">       option 3</div>    </div>
+        <div class="ri-click-item">     <div class="bi sep bi-star">        option 3</div>    </div>
         <div class="ri-click-item">     <div class="bi sep bi-image">       option 4</div>    </div>
         <div class="ri-click-item">     <div class="bi sep bi-gear-fill">   option 5</div>    </div>
         <div class="ri-click-item">     <div class="bi sep bi-share-fill">  option 6</div>    </div>
     </div>
+    <div id="rcMenu1" class="ri-click-menu">
+        <div class="ri-click-item" onclick="">     <div class="bi sep bi-pencil-fill"> Edit</div>    </div>
+        <div class="ri-click-item" onclick="removeList()">     <div class="bi sep bi-trash-fill">  Delete</div>    </div>
+        <div class="ri-click-item" onclick="">     <div class="bi sep bi-star">        Favorite</div>    </div>
+    </div>
 
-    <div class="maintainer ">
+    <div class="maintainer">
         <div class="navhead">
             <h1>ToDo App</h1>
             <div class="iconBar">
@@ -46,12 +51,16 @@
                         <div class="lftItm listLinkBar">Placeholder</div>
                         <div class="lftItm listLinkBar">Placeholder</div>
                     </div>
-
+                    <div id="trashBin">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                        </svg>
+                    </div>
                 </div>
                 <div class="right">
                     <h1 id="rightTitle">
                         Placeholder
-                        <svg onclick="save()" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-save-fill" viewBox="0 0 16 16">
+                        <svg onclick="save()" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class=" sep bi bi-save-fill" viewBox="0 0 16 16">
                             <path d="M8.5 1.5A1.5 1.5 0 0 1 10 0h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h6c-.314.418-.5.937-.5 1.5v7.793L4.854 6.646a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0l3.5-3.5a.5.5 0 0 0-.708-.708L8.5 9.293V1.5z"/>
                             </svg> 
                     </h1>
@@ -66,21 +75,52 @@
     </div>
 </body>
 <style>
-    #ri-click-menu{
-        background-color: rgb(249, 249, 249);
+    #trashBin{
+        color: #333;
+        position: absolute;
+        bottom: 0;
+        padding: 5px;
+    }
+    .ri-click-menu{
+        background-color: #eaeaea;
         width: fit-content;
-        padding: 3px 10px;
+        padding: 0px 6px;
         border-radius: 5px;
         position: fixed;
-        box-shadow: 0px 7px 25px -1px rgba(0,0,0,0.25);
+        box-shadow: 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 
+                    0px 3px 14px 2px rgb(0 0 0 / 12%), 
+                    0px 5px 5px -3px rgb(0 0 0 / 20%);
         z-index: 9999;
         display: none;
-        /* transform: scale(0); */
+        transform: rotateX(90deg);
+        transition: transform 300ms ease-out;
+        user-select: none;
+        flex-direction: column;
+        justify-content:end;
+        align-items: center;
+
     }
     .ri-click-item{
         color: #333;
         width: 100%;
-        margin: 5px 0;
+        padding: 2px 6px;
+        transition: 75ms;
+    }
+    .ri-click-item:first-child{
+        margin-top: 2px;
+    }
+    .ri-click-item:not(:last-child, :only-child){
+        border-bottom: rgb(216, 216, 216) solid 1px;
+        border-radius: 0px;
+    }
+    .ri-click-item:hover{
+        transform: scale(102%) translateY(-.4px);
+        min-width: 100%;
+        background-color: #efefef;
+        border-radius: 5px;
+        box-shadow: 0px 8px 10px 1px rgb(0 0 0 / 6%), 
+                    0px 3px 14px 2px rgb(0 0 0 / 5%), 
+                    0px 5px 5px -3px rgb(0 0 0 / 9%);
     }
 
     #addLiBtn{
@@ -92,10 +132,16 @@
         transition: .2s;
     }
     .active{
-        color: rgb(106, 109, 112);
-        background-color: rgb(230, 230, 230);
-        transition: .2s;
         margin-bottom: 1px;
+        color: rgb(106, 109, 112); 
+        background-color: rgb(230, 230, 230);
+    }
+    .acstion{
+        animation: showActive .3s ease-out;
+    }
+    @keyframes showActive{
+        from {background-color: rgb(106, 109, 112);}
+        to   {color: rgb(106, 109, 112); background-color: rgb(230, 230, 230);}
     }
     .seperate{
         margin-bottom: 10px;
@@ -135,10 +181,12 @@
         display: flex;
         flex-direction: column;
     }
+    .listLinkBar{
+        transition: .2s;
+    }
     .listLinkBar:not(.active){
         background-color: rgb(106, 109, 112);
         margin-bottom: 1px;
-        transition: .2s;
     }
     .listLinkBar:not(.active):hover{
         transform: translateX(5%);
@@ -158,6 +206,7 @@
         padding-top: 1em;
         display: flex;
         flex-direction: column;
+        position: relative;
     }
     .right{
         width: 100%;
@@ -166,7 +215,6 @@
         display: flex;
         flex-direction: column;
     }
-
     body{
         background-color: rgb(41, 41, 41);
         margin: 15px 1%;

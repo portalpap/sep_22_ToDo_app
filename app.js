@@ -4,17 +4,41 @@ let taskCol = document.getElementById("taskCol");
 let liBtn = document.getElementById("addLiBtn");
 let liInput = document.getElementById("liTextInput");
 
-const rcMenu = document.getElementById("ri-click-menu");
-document.onmousedown = function(event) {
-    event.preventDefault();
-    if (event.which == 3) {
-        // alert("noo");
-        rightClick(event);
+const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+const main = document.getElementsByClassName("maintainer")[0];
+const rcMenu = document.getElementById("rcMenu1");
+let rcItems = document.getElementsByClassName("ri-click-item");
+let rcType = 0;
+let scopeIdx = undefined;
+let scopeTarg = undefined;
+let trash = {};
+main.onclick = closeRC;
+function closeRC(event){
+    rcMenu.style.transform = "rotateX(90)";
+    rcMenu.style.display = "none";
+    scopeIdx = undefined;
+    scopeTarg = undefined;
+}
+main.oncontextmenu = new Function("return false;");
+rcMenu.oncontextmenu = new Function("return false;");
+main.onmousedown = function(event) {
+    if (event.which == 3){
+            rcMenu.style.transform = "rotateX(90)";
+            rcMenu.style.display = "flex";
+            let mainGBCR = main.getBoundingClientRect();
+            let rcMenuGBCR = rcMenu.getBoundingClientRect();
+            rcMenu.style.left = 
+            clamp(event.clientX, 0, (mainGBCR.width + mainGBCR.x) - rcMenuGBCR.width)
+            + "px";
+            rcMenu.style.top = 
+            clamp(event.clientY, 0, (mainGBCR.height + mainGBCR.y) - rcMenuGBCR.height) 
+            + "px";
+            rcMenu.style.transform = "rotateX(0)";
     }
 }
-
 let tempObj = {};
 let temp;
+let currentLi = 0;
 let listObjs = { 
     0:  {name: "ExampleList",
         todos: 
@@ -24,41 +48,33 @@ let listObjs = {
         ]
     }
 };
-let currentLi = 0;
 
 load("INIT");
 
 function load(Ltype){
     if(Ltype == "INIT"){
         console.log(localStorage);
-        listObjs = JSON.parse(localStorage.getItem(localStorage.key(0)));
-        console.log("INIT: loaded \"" + localStorage.key(0) + "\"");
+        listObjs = JSON.parse(localStorage.getItem(localStorage.getItem("lastSaveType")));
+        console.log("INIT: loaded \"" + localStorage.getItem("lastSaveType") + "\"");
     }
-    else if(Ltype != undefined)
+    else if(Ltype != undefined && Ltype != "transition")
         autoSave();
-
     listCol.innerHTML = "";
     taskCol.innerHTML = "";
     for (let i = 0; i < Object.keys(listObjs).length; i++) {
-        if(i == currentLi)
-            temp = 'active'
-        else
-            temp = ""
-        listCol.innerHTML += '<div class="lftItm ' + temp + ' listLinkBar" id="'+ i +
-        '" onclick="switchLiTab(this.id)">' + listObjs[i].name + '</div>';
+        listCol.innerHTML += '<div class="lftItm listLinkBar' + 
+        ((i == currentLi) ? ((Ltype == "transition") ? ' active acstion ' : ' active ') : "") + 
+        '" id="' + i + '"' + 
+        ' onmouseover="updateScope(' + i + ',this)" ' +
+        'onclick="switchLiTab(this.id)">' + 
+        listObjs[i].name + '</div>';
     }
     for (let i = 0; i < listObjs[currentLi].todos.length; i++){
         taskCol.innerHTML +=  '<div class="rgtItm"><input value="'+ i +
-        '" type="checkbox" onchange="updateCheckbox(this.value, this.checked)"">' + listObjs[currentLi].todos[i].inner + '</div>';
-    } 
-
-}
-
-function rightClick(event){
-    rcMenu.style.display = "block";
-
-    rcMenu.style.left = event.clientX + "px";
-    rcMenu.style.top = event.clientY + "px";
+        '" type="checkbox" onchange="updateCheckbox(this.value, this.checked)"' + 
+        ((listObjs[currentLi].todos[i].completed) ? "checked" : "") + 
+        '>' + listObjs[currentLi].todos[i].inner + '</div>';
+    }
 }
 
 function openLiBtn(){
@@ -96,12 +112,14 @@ function save(){
     localStorage.setItem("newSave", JSON.stringify(listObjs));
     console.log("SAVE: Sucessfuly saved:")
     console.log(JSON.parse(localStorage.getItem("newSave")));
+    localStorage.setItem("lastSaveType", "newSave");
 }
 
 function autoSave(){
     localStorage.setItem("autoSave", JSON.stringify(listObjs));
     console.log("AUTOSAVE: Sucessfuly saved:")
     console.log(JSON.parse(localStorage.getItem("autoSave")));
+    localStorage.setItem("lastSaveType", "autoSave");
 }
 
 
@@ -112,14 +130,53 @@ function updateCheckbox(thisId, thisBool){
 
 function switchLiTab(value){
     currentLi = value;
-    load();
+    load("transition");
+}
+
+function updateScope(value, that){
+    scopeTarg = that;
+    scopeIdx = value;
+}
+
+function removeTodo(idx){
+    listObjs[currentLi].todos[idx] = undefined;
+    listObjs[currentLi].todos = collapseArray(listObjs[currentLi].todos);
+}
+
+function removeList(idx){
+    if(idx == undefined)
+        idx = scopeIdx;
+    trash = listObjs[idx];
+    listObjs[idx] = undefined;
+    listObjs = collapseArray(listObjs);
+    if(idx == currentLi)
+        animateToLoad(scopeTarg, 200, true, false);
+    else if(idx < currentLi)
+        animateToLoad(scopeTarg, 200, false, true);
+    else
+        animateToLoad(scopeTarg, 200, false, false);
+}
+
+function animateToLoad(targObj, delay, isActive, isLess){
+    targObj.style.transform += "perspective(200px) rotateX(-90deg)";
+    targObj.style.height = 0;
+    currentLi = clamp(currentLi - isLess, 0, Object.keys(listObjs).length - 1)
+    if(isActive)
+        setTimeout(switchLiTab, delay, currentLi);
+    else
+        setTimeout(load, delay);
+}
+
+function collapseArray(collapseArrayValue){
+    let collapseArrayTemp = [];
+    for (let i = 0; i < Object.keys(collapseArrayValue).length; i++) 
+        if(collapseArrayValue[i] != undefined)
+            collapseArrayTemp.push(collapseArrayValue[i]);
+    return collapseArrayTemp;
 }
 
 
-function editAt(tObj){
-    
-}
 
 function debug(value){
-    console.log(value);
+    console.log("HELLLO");
 }
