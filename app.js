@@ -6,23 +6,30 @@ let liInput = document.getElementById("liTextInput");
 
 const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 const main = document.getElementsByClassName("maintainer")[0];
-const rcMenu = document.getElementById("rcMenu1");
+const rcMenus = document.getElementsByClassName("ri-click-menu");
+let rcMenu = rcMenus[0];
 let rcItems = document.getElementsByClassName("ri-click-item");
 let rcType = 0;
 let scopeIdx = undefined;
 let scopeTarg = undefined;
+let scempTarg = undefined;
+let scempIdx = undefined;
 let trash = {};
 main.onclick = closeRC;
 function closeRC(event){
-    rcMenu.style.transform = "rotateX(90)";
-    rcMenu.style.display = "none";
-    scopeIdx = undefined;
-    scopeTarg = undefined;
+    for (const iterator of rcMenus) {
+        iterator.style.transform = "rotateX(90)";
+        iterator.style.display = "none";
+    }
 }
 main.oncontextmenu = new Function("return false;");
-rcMenu.oncontextmenu = new Function("return false;");
+for (const iterator of rcMenus) 
+    iterator.oncontextmenu = new Function("return false;");
 main.onmousedown = function(event) {
     if (event.which == 3){
+            closeRC();
+            scopeIdx = scempIdx;
+            scopeTarg = scempTarg;
             rcMenu.style.transform = "rotateX(90)";
             rcMenu.style.display = "flex";
             let mainGBCR = main.getBoundingClientRect();
@@ -61,15 +68,15 @@ function load(Ltype){
         autoSave();
     listCol.innerHTML = "";
     taskCol.innerHTML = "";
-    for (let i = 0; i < Object.keys(listObjs).length; i++) {
+    /* Load list items */ for (let i = 0; i < Object.keys(listObjs).length; i++) {
         listCol.innerHTML += '<div class="lftItm listLinkBar' + 
         ((i == currentLi) ? ((Ltype == "transition") ? ' active acstion ' : ' active ') : "") + 
         '" id="' + i + '"' + 
-        ' onmouseover="updateScope(' + i + ',this)" ' +
+        ' onmouseover="updateScope(' + i + ',this,1)" onmouseleave="updateScope()"' +
         'onclick="switchLiTab(this.id)">' + 
         listObjs[i].name + '</div>';
     }
-    for (let i = 0; i < listObjs[currentLi].todos.length; i++){
+    /* Load todos */ for (let i = 0; i < listObjs[currentLi].todos.length; i++){ 
         taskCol.innerHTML +=  '<div class="rgtItm"><input value="'+ i +
         '" type="checkbox" onchange="updateCheckbox(this.value, this.checked)"' + 
         ((listObjs[currentLi].todos[i].completed) ? "checked" : "") + 
@@ -133,9 +140,16 @@ function switchLiTab(value){
     load("transition");
 }
 
-function updateScope(value, that){
-    scopeTarg = that;
-    scopeIdx = value;
+function updateScope(value, that, type){
+    // console.log(value + " -> " + that + " -> " + type); +
+        if(type == undefined){ //default
+            that = document;
+            type = 0;
+        }
+        scempTarg = that;
+        scempIdx = value;
+        rcType = type;
+        rcMenu = rcMenus[rcType];
 }
 
 function removeTodo(idx){
@@ -158,7 +172,7 @@ function removeList(idx){
 }
 
 function animateToLoad(targObj, delay, isActive, isLess){
-    targObj.style.transform += "perspective(200px) rotateX(-90deg)";
+    targObj.style.transform = "perspective(200px) rotateX(-90deg)";
     targObj.style.height = 0;
     currentLi = clamp(currentLi - isLess, 0, Object.keys(listObjs).length - 1)
     if(isActive)
