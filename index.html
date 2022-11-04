@@ -8,8 +8,15 @@
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
     <script defer type="text/javascript" src="/app.js"></script>
+    <script defer type="text/javascript" src="/nodes.js"></script>
     <title>ToDo app</title>
 </head>
+
+<div id="contentWindow">
+    <div id="nodeTainer"></div>
+    <canvas id="canvas" width="500" height="400">
+    </canvas>
+</div>
 
 <body>
     <!-- <div class="maintainer animate__animated animate__zoomInDown"> -->
@@ -22,9 +29,15 @@
         <div class="ri-click-item">     <div class="bi sep bi-share-fill">  option 6</div>    </div>
     </div>
     <div id="rcMenu0" class="ri-click-menu">
-        <div class="ri-click-item" onclick="">     <div class="bi sep bi-pencil-fill"> Edit</div>    </div>
-        <div class="ri-click-item" onclick="removeList()">     <div class="bi sep bi-trash-fill">  Delete</div>    </div>
-        <div class="ri-click-item" onclick="">     <div class="bi sep bi-star">        Favorite</div>    </div>
+        <div class="ri-click-item" onclick="rcFun('edit')">     <div class="bi sep bi-pencil-fill"> Edit</div>    </div>
+        <div class="ri-click-item" onclick="rcFun('deleteList')">     <div class="bi sep bi-trash-fill">  Delete</div>    </div>
+        <div class="ri-click-item" onclick="rcFun()">     <div class="bi sep bi-star">        Favorite</div>    </div>
+    </div>
+    <div id="rcMenu2" class="ri-click-menu">
+        <div class="ri-click-item" onclick="rcFun('edit')">     <div class="bi sep bi-pencil-fill"> Edit</div>    </div>
+        <div class="ri-click-item" onclick="rcFun('newUp')">     <div class="bi sep bi-arrow-bar-up">        New Row Above</div>    </div>
+        <div class="ri-click-item" onclick="rcFun('newDown')">     <div class="bi sep bi-arrow-bar-down">        New Row Below</div>    </div>
+        <div class="ri-click-item" onclick="rcFun('deleteTodo')">     <div class="bi sep bi-trash-fill">  Delete</div>    </div>
     </div>
 
     <div class="maintainer">
@@ -43,14 +56,15 @@
         </div>
             <div class="centre">
                 <div class="left">
-                    <input id="liTextInput" class="lftItm newContent" type="text" onchange="openLiBtn()" oninput="updateLiText(this.value)" placeholder="Enter List Name...">
-                        <button onclick="closeLiBtn(), addList()" id="addLiBtn">Add "listNameHere" +</button>
+                    <input id="liTextInput" class="lftItm newContent"  type="text" onchange="openLiBtn()" oninput="updateLiText(this.value)" placeholder="Enter List Name...">
+                        <button onclick="closeLiBtn(), addList()"  id="addLiBtn">Add "listNameHere" +</button>
                         <div class="seperate"></div>
                         
                     <div id="listCol">
                         <div class="lftItm listLinkBar">Placeholder</div>
                         <div class="lftItm listLinkBar">Placeholder</div>
-                        <div class="lftItm listLinkBar">Placeholder</div>
+                        <div class="lftItm listLinkBar editInput" id="me" contenteditable="true" ><p>Lorem ipsum dolor<i></i></p></div>
+                        <div class="lftItm listLinkBar" id="0"><textarea cols="30" rows="2" class= "editInput"></textarea></div>
                     </div>
                 </div>
                 <div class="right">
@@ -64,13 +78,61 @@
 
                     <div id="taskCol">
                         <div class="rgtItm"><input value="0" type="checkbox" onchange="updateCheckbox(this.value, this.checked)">item objective here</div>
-                        <div class="rgtItm"><input type="checkbox">another objective here</div>
                     </div>
                 </div>
             </div>
     </div>
 </body>
 <style>
+    .nodeBlock{
+        user-select: none;
+        transform-origin: 0 0;
+        --myNodeColor: blue;
+        --myBackColor: 109, 115, 113;
+        background-color: rgb(var(--myBackColor));
+        position: absolute;
+        border-radius: 10px;
+        flex-direction: column;
+        display: flex;
+        transition: outline .2s;
+        box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+        outline: var(--myNodeColor) 3px solid;
+    }
+    .nodeBlock:focus{
+        outline-width: 5px;
+    }
+    #nodeTainer{
+        background-color: transparent;
+        z-index: 1;
+    }
+    #contentWindow{
+        height: 400px;
+        width: 500px;
+        background-color: aliceblue;
+        overflow: hidden;
+        position: relative;
+        outline: 5px dashed lime;
+    }
+    #canvas{
+        width: 100%;
+        height: 100%;
+        transform-origin: top left;
+        background-color: transparent;
+    }
+
+
+
+    .noSelect{
+        user-select: none;
+    }
+    p{
+        flex-direction: column;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
     .ri-click-menu{
         background-color: #eaeaea;
         width: fit-content;
@@ -114,11 +176,11 @@
     }
 
     #addLiBtn{
-        height: 0em;
+        min-height: 0px;
         overflow: hidden;
         display: block;
         transition: 0s;
-        transform: translateY(-6px);
+        transform: rotateX(90deg);
         transition: .2s;
     }
     .active{
@@ -135,10 +197,11 @@
     input[type="checkbox"]{
         height: 75%;
         aspect-ratio: 1/1;
+        z-index: 1;
         margin: 5px;
         box-shadow: 0px 0px 0px 1px rgba(0,0,0,0.75), 0px 0px 2px 1px rgba(0,0,0,0.75) inset;
     }
-    :root{
+    *{
         font-family:Verdana, Geneva, Tahoma, sans-serif;
         --priCol: rgb(0, 75, 146);
     }
@@ -146,6 +209,7 @@
        padding: 0 20px;
     }
     .rgtItm{
+        transition: .2s;
         max-width: 100%;
         height: 42px;
         display: flex;
@@ -155,8 +219,8 @@
         box-shadow: 0px 0px 0px .5px rgba(0,0,0,0.75);
     }
     .lftItm{
-        max-width: 100%;
-        min-height: 48px;
+        max-width: 246px;
+        /* min-height: 48px; */
         max-height: 6em;
         padding-left: 10px;
         display: flex;
@@ -164,10 +228,16 @@
         align-items: center;
     }
     #listCol{
-        display: flex;
+        font-size: 19px;
+        display: 10vh;
+        width: 17em;
         flex-direction: column;
+        overflow-y: auto;
+        height: 100%;
     }
     .listLinkBar{
+        outline-color: rgb(51, 157, 99);
+        outline-offset: -1.6px;
         height: 10vh;
         transition: .2s;
         cursor: context-menu;
@@ -177,10 +247,12 @@
         margin-bottom: 1px;
     }
     .listLinkBar:not(.active):hover{
-        transform: translateX(5%) scaleX(.9);
-        padding-left: 1em;
+        transform: translateX(15px);
+        padding-left: 12px;
     }
-    input[type="text"]{
+    #liTextInput{
+        min-height: 38px;
+        max-width: 100%;
         z-index: 1;
         color: rgba(51, 51, 51,.5);
         border: none;
@@ -191,8 +263,6 @@
     z-index: -100;
     }
     .left{
-        overflow-y:auto;
-        overflow-x: visible;
         width: 16em;
         color: #ddd;
         background-color: rgb(199, 198, 198);
@@ -213,9 +283,10 @@
         background-color: rgb(41, 41, 41);
         margin: 15px 1%;
         height: calc(100vh - 30px);
+        width: 98vw;
+        position: fixed;
     }
     .maintainer{
-        /* overflow: hidden; */
         border: rgba(255 , 255, 255, .5) solid 2px;
         border-radius: 2px;
         margin: 0;

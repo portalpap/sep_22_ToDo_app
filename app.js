@@ -43,6 +43,12 @@ main.onmousedown = function(event) {
             rcMenu.style.transform = "rotateX(0)";
     }
 }
+let key = undefined;
+document.addEventListener("keydown", function(event) {
+    key = event.code;
+    if(event.code === 13)
+        console.log("ENTER");
+});
 let tempObj = {};
 let temp;
 let currentLi = 0;
@@ -64,37 +70,41 @@ function load(Ltype){
         listObjs = JSON.parse(localStorage.getItem(localStorage.getItem("lastSaveType")));
         console.log("INIT: loaded \"" + localStorage.getItem("lastSaveType") + "\"");
     }
-    else if(Ltype != undefined && Ltype != "transition")
+    else if(Ltype != undefined && Ltype != "transition" && Ltype != "edit")
         autoSave();
-    listCol.innerHTML = "";
-    taskCol.innerHTML = "";
+    listCol.innerHTML = ""; taskCol.innerHTML = "";
     /* Load list items */ for (let i = 0; i < Object.keys(listObjs).length; i++) {
         listCol.innerHTML += '<div class="lftItm listLinkBar' + 
-        ((i == currentLi) ? ((Ltype == "transition") ? ' active acstion ' : ' active ') : "") + 
-        '" id="' + i + '"' + 
-        ' onmouseover="updateScope(' + i + ',this,1)" onmouseleave="updateScope()"' +
-        'onclick="switchLiTab(this.id)">' + 
-        listObjs[i].name + '</div>';
+        ((i == currentLi) ? ((Ltype == "transition") ? ' active acstion ' : ' active ') : "") + // apply "ACTIVE" to selected list
+        '" id="' + i + '"' + // set ID
+        ' onmouseover="updateScope(' + i + ',this,1)" onmouseleave="updateScope()" ' + // change scope when touching mouse
+                ((Ltype == "edit" && i == scopeIdx) ? // Check if load to edit
+            ' contenteditable="true" onblur="load()"><p  onmouseover="selectText(this)">' + listObjs[i].name
+          :
+            'onclick="switchLiTab(this.id)" ondblclick="load(\'edit\')"><p class="noSelect">' + listObjs[i].name) //generate plain text
+        + '<i></i></p></div>';
     }
     /* Load todos */ for (let i = 0; i < listObjs[currentLi].todos.length; i++){ 
-        taskCol.innerHTML +=  '<div class="rgtItm"><input value="'+ i +
+        taskCol.innerHTML +=  '<div class="rgtItm" ' +
+        ' onmouseover="updateScope(' + i + ',this,2)" onmouseleave="updateScope()" ' + // change scope for right item
+        '><input value="'+ i +
         '" type="checkbox" onchange="updateCheckbox(this.value, this.checked)"' + 
         ((listObjs[currentLi].todos[i].completed) ? "checked" : "") + 
-        '>' + listObjs[currentLi].todos[i].inner + '</div>';
+        '><p>' + listObjs[currentLi].todos[i].inner + '</p></div>';
     }
 }
 
 function openLiBtn(){
     if(liText != ""){
     liBtn.innerHTML = "Add " + liText + " +";
-    liBtn.style.height = "2.5em";
-    liBtn.style.transform = "translateY(0)";
+    liBtn.style.minHeight = "2.5em";
+    liBtn.style.transform = "perspective(200px) rotateX(0deg)";
     }
 }
 
 function closeLiBtn(){
-    liBtn.style.height = "0em";
-    liBtn.style.transform = "translateY(-6px)";
+    liBtn.style.minHeight = "0";
+    liBtn.style.transform = "rotateX(90deg)";
     liInput.value = "";
     console.log(liBtn.value);
 }
@@ -141,7 +151,7 @@ function switchLiTab(value){
 }
 
 function updateScope(value, that, type){
-    // console.log(value + " -> " + that + " -> " + type); +
+    // console.log(value + " -> " + that + " -> " + type); 
         if(type == undefined){ //default
             that = document;
             type = 0;
@@ -155,6 +165,12 @@ function updateScope(value, that, type){
 function removeTodo(idx){
     listObjs[currentLi].todos[idx] = undefined;
     listObjs[currentLi].todos = collapseArray(listObjs[currentLi].todos);
+    // if(idx == currentLi)
+    // animateToLoad(scopeTarg, 200, true, false);
+    //     else if(idx < currentLi)
+    // animateToLoad(scopeTarg, 200, false, true);
+    //     else
+    // animateToLoad(scopeTarg, 200, false, false)
 }
 
 function removeList(idx){
@@ -163,6 +179,7 @@ function removeList(idx){
     trash = listObjs[idx];
     listObjs[idx] = undefined;
     listObjs = collapseArray(listObjs);
+
     if(idx == currentLi)
         animateToLoad(scopeTarg, 200, true, false);
     else if(idx < currentLi)
@@ -171,12 +188,16 @@ function removeList(idx){
         animateToLoad(scopeTarg, 200, false, false);
 }
 
-function animateToLoad(targObj, delay, isActive, isLess){
-    targObj.style.transform = "perspective(200px) rotateX(-90deg)";
+function animateToLoad(targObj, delay, isActive, isLess, isTodo){
+    targObj.style.transform = "perspective(1000px) rotateX(-90deg)";
     targObj.style.height = 0;
-    currentLi = clamp(currentLi - isLess, 0, Object.keys(listObjs).length - 1)
-    if(isActive)
-        setTimeout(switchLiTab, delay, currentLi);
+    if(isTodo == undefined){
+        currentLi = clamp(currentLi - isLess, 0, Object.keys(listObjs).length - 1)
+        if(isActive)
+            setTimeout(switchLiTab, delay, currentLi);
+        else
+        setTimeout(load, delay);
+    }
     else
         setTimeout(load, delay);
 }
@@ -189,8 +210,56 @@ function collapseArray(collapseArrayValue){
     return collapseArrayTemp;
 }
 
+function rcFun(which){
+    closeRC();
+    console.log("RAN \"" + which + '\"')
+    switch (which) {
+        case 'edit':
+            load('edit');
+                break;
+        case 'deleteList':
+            removeList();
+                break;
+        case 'deleteTodo':
+            removeTodo(scopeIdx);
+            animateToLoad(scopeTarg, 200, false, false, true);
+                break;
+        case 'newUp':
+            addTodo("New Task", scopeIdx);
+            load();
+                break;
+        case 'newDown':
+            addTodo("New Task", scopeIdx + 1);
+            load();
+                break;
+        default:
+            break;
+    }
 
+}
+
+function addTodo(insideText, insertQ){
+    let tomp = { inner: insideText, completed: false};
+    if(insertQ == undefined)
+        listObjs[currentLi].todos.push(tomp);
+    else{
+        listObjs[currentLi].todos = insert(listObjs[currentLi].todos, insertQ, tomp);
+    }
+}
+
+function insert(tary, idx, items){
+    let tary1 = tary.slice(0,idx);
+    tary1.push(items);
+    return tary1.concat(tary.slice(idx));
+}
 
 function debug(value){
-    console.log("HELLLO");
+    console.log("DEBAG: ran");
+
 }
+
+function selectText(targ) {
+    window.getSelection().selectAllChildren(targ.children[0]);
+  }
+
+  
