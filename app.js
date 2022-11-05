@@ -30,7 +30,6 @@ main.onmousedown = function(event) {
             closeRC();
             scopeIdx = scempIdx;
             scopeTarg = scempTarg;
-            rcMenu.style.transform = "rotateX(90)";
             rcMenu.style.display = "flex";
             let mainGBCR = main.getBoundingClientRect();
             let rcMenuGBCR = rcMenu.getBoundingClientRect();
@@ -38,7 +37,7 @@ main.onmousedown = function(event) {
             clamp(event.clientX, 0, (mainGBCR.width + mainGBCR.x) - rcMenuGBCR.width)
             + "px";
             rcMenu.style.top = 
-            clamp(event.clientY, 0, (mainGBCR.height + mainGBCR.y) - rcMenuGBCR.height) 
+            clamp(event.clientY, 0,  (mainGBCR.height + mainGBCR.y) - rcMenuGBCR.height) 
             + "px";
             rcMenu.style.transform = "rotateX(0)";
     }
@@ -212,6 +211,7 @@ function collapseArray(collapseArrayValue){
 
 function rcFun(which){
     closeRC();
+    
     console.log("RAN \"" + which + '\"')
     switch (which) {
         case 'edit':
@@ -232,6 +232,10 @@ function rcFun(which){
             addTodo("New Task", scopeIdx + 1);
             load();
                 break;
+        case 'NW-addNode':
+            selectedNodes.push(new Nodec("new", getCellX(windowMouseX), getCellY(windowMouseY)));
+            addAllNodeElements();
+            break;
         default:
             break;
     }
@@ -254,8 +258,7 @@ function insert(tary, idx, items){
 }
 
 function debug(value){
-    console.log("DEBAG: ran");
-
+    console.log(value);
 }
 
 function selectText(targ) {
