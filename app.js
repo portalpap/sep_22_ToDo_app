@@ -1,10 +1,10 @@
+/*
 let liText = "";
 let listCol = document.getElementById("listCol");
 let taskCol = document.getElementById("taskCol");
 let liBtn = document.getElementById("addLiBtn");
 let liInput = document.getElementById("liTextInput");
 
-const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 const main = document.getElementsByClassName("maintainer")[0];
 const rcMenus = document.getElementsByClassName("ri-click-menu");
 let rcMenu = rcMenus[0];
@@ -15,6 +15,8 @@ let scopeTarg = undefined;
 let scempTarg = undefined;
 let scempIdx = undefined;
 let trash = {};
+*/
+
 main.onclick = closeRC;
 function closeRC(event){
     for (const iterator of rcMenus) {
@@ -50,14 +52,197 @@ document.addEventListener("keydown", function(event) {
 });
 let tempObj = {};
 let temp;
-let currentLi = 0;
 let listObjs = { 
     0:  {name: "ExampleList",
         todos: 
         [
             { inner: "complete this task to win!", completed: false},
             { inner: "this is anouther task", completed: false}
-        ]
+        ],
+        nodeBlockWindow: [
+                {
+                    "label": "Default",
+                    "xCell": 0,
+                    "yCell": -9,
+                    "gridW": 8,
+                    "gridH": 6,
+                    "basicText": "",
+                    "allies": [
+                        {
+                            "label": "added",
+                            "xCell": 20,
+                            "yCell": 0,
+                            "gridW": 8,
+                            "gridH": 6,
+                            "basicText": "",
+                            "allies": [],
+                            "strandColor": "#ff0000",
+                            "id": "nodeBlock4"
+                        },
+                        {
+                            "label": "added",
+                            "xCell": 20,
+                            "yCell": -18,
+                            "gridW": 8,
+                            "gridH": 6,
+                            "basicText": "",
+                            "allies": [],
+                            "strandColor": "#ff0000",
+                            "id": "nodeBlock5"
+                        }
+                    ],
+                    "strandColor": "#ff0000",
+                    "id": "nodeBlock0"
+                },
+                {
+                    "label": "added",
+                    "xCell": -20,
+                    "yCell": 0,
+                    "gridW": 8,
+                    "gridH": 6,
+                    "basicText": "",
+                    "allies": [
+                        {
+                            "label": "Default",
+                            "xCell": 0,
+                            "yCell": -9,
+                            "gridW": 8,
+                            "gridH": 6,
+                            "basicText": "",
+                            "allies": [
+                                {
+                                    "label": "added",
+                                    "xCell": 20,
+                                    "yCell": 0,
+                                    "gridW": 8,
+                                    "gridH": 6,
+                                    "basicText": "",
+                                    "allies": [],
+                                    "strandColor": "#ff0000",
+                                    "id": "nodeBlock4"
+                                },
+                                {
+                                    "label": "added",
+                                    "xCell": 20,
+                                    "yCell": -18,
+                                    "gridW": 8,
+                                    "gridH": 6,
+                                    "basicText": "",
+                                    "allies": [],
+                                    "strandColor": "#ff0000",
+                                    "id": "nodeBlock5"
+                                }
+                            ],
+                            "strandColor": "#ff0000",
+                            "id": "nodeBlock0"
+                        },
+                        {
+                            "label": "added",
+                            "xCell": 0,
+                            "yCell": 9,
+                            "gridW": 8,
+                            "gridH": 6,
+                            "basicText": "",
+                            "allies": [
+                                {
+                                    "label": "added",
+                                    "xCell": 20,
+                                    "yCell": 18,
+                                    "gridW": 8,
+                                    "gridH": 6,
+                                    "basicText": "",
+                                    "allies": [],
+                                    "strandColor": "#ff0000",
+                                    "id": "nodeBlock3"
+                                },
+                                {
+                                    "label": "added",
+                                    "xCell": 20,
+                                    "yCell": 0,
+                                    "gridW": 8,
+                                    "gridH": 6,
+                                    "basicText": "",
+                                    "allies": [],
+                                    "strandColor": "#ff0000",
+                                    "id": "nodeBlock4"
+                                }
+                            ],
+                            "strandColor": "#ff0000",
+                            "id": "nodeBlock2"
+                        }
+                    ],
+                    "strandColor": "#ff0000",
+                    "id": "nodeBlock1"
+                },
+                {
+                    "label": "added",
+                    "xCell": 0,
+                    "yCell": 9,
+                    "gridW": 8,
+                    "gridH": 6,
+                    "basicText": "",
+                    "allies": [
+                        {
+                            "label": "added",
+                            "xCell": 20,
+                            "yCell": 18,
+                            "gridW": 8,
+                            "gridH": 6,
+                            "basicText": "",
+                            "allies": [],
+                            "strandColor": "#ff0000",
+                            "id": "nodeBlock3"
+                        },
+                        {
+                            "label": "added",
+                            "xCell": 20,
+                            "yCell": 0,
+                            "gridW": 8,
+                            "gridH": 6,
+                            "basicText": "",
+                            "allies": [],
+                            "strandColor": "#ff0000",
+                            "id": "nodeBlock4"
+                        }
+                    ],
+                    "strandColor": "#ff0000",
+                    "id": "nodeBlock2"
+                },
+                {
+                    "label": "added",
+                    "xCell": 20,
+                    "yCell": 18,
+                    "gridW": 8,
+                    "gridH": 6,
+                    "basicText": "",
+                    "allies": [],
+                    "strandColor": "#ff0000",
+                    "id": "nodeBlock3"
+                },
+                {
+                    "label": "added",
+                    "xCell": 20,
+                    "yCell": 0,
+                    "gridW": 8,
+                    "gridH": 6,
+                    "basicText": "",
+                    "allies": [],
+                    "strandColor": "#ff0000",
+                    "id": "nodeBlock4"
+                },
+                {
+                    "label": "added",
+                    "xCell": 20,
+                    "yCell": -18,
+                    "gridW": 8,
+                    "gridH": 6,
+                    "basicText": "",
+                    "allies": [],
+                    "strandColor": "#ff0000",
+                    "id": "nodeBlock5"
+                }
+        ],
+        NBW_open: true
     }
 };
 
@@ -65,9 +250,11 @@ load("INIT");
 
 function load(Ltype){
     if(Ltype == "INIT"){
-        console.log(localStorage);
-        listObjs = JSON.parse(localStorage.getItem(localStorage.getItem("lastSaveType")));
-        console.log("INIT: loaded \"" + localStorage.getItem("lastSaveType") + "\"");
+        if(localStorage.length > 0){
+            console.log(localStorage);
+            listObjs = JSON.parse(localStorage.getItem("newSave"));
+            console.log("INIT: loaded \"" + localStorage.getItem("lastSaveType") + "\"");
+        }
     }
     else if(Ltype != undefined && Ltype != "transition" && Ltype != "edit")
         autoSave();
@@ -91,6 +278,99 @@ function load(Ltype){
         ((listObjs[currentLi].todos[i].completed) ? "checked" : "") + 
         '><p>' + listObjs[currentLi].todos[i].inner + '</p></div>';
     }
+
+    // let tomp = listObjs[currentLi].nodeBlockWindow;
+    // console.log(tomp);
+    for(let iter of document.getElementsByName('openQ')){
+        iter.classList.remove('openQ');
+    }
+
+    selectedNodes = [];
+
+    ctxTainer.style.transition = ".02s ease-out";
+    for(let iter of ctxButton.children)
+        iter.style.transition = ".1s";
+
+    if(listObjs[currentLi].NBW_open){
+        ctxTainer.classList.remove('openQ');
+        ctxButton.classList.remove('openQ');
+    }
+    else{
+        ctxTainer.classList.add('openQ');
+        ctxButton.classList.add('openQ');
+    }
+    for(let iter of listObjs[currentLi].nodeBlockWindow){
+        let todec = new Nodec();
+        for(let props of Object.getOwnPropertyNames(iter))
+            todec[props] = iter[props];
+        selectedNodes.push(todec);
+    }
+    setTimeout(function(){
+        ctxTainer.style.transition = ".2s ease-out";
+        for(let iter of ctxButton.children)
+            iter.style.transition  = ".2s ease-out";
+    }, 200)
+    if(Ltype != "INIT"){
+        addAllNodeElements();
+        drawGrid();
+    }
+
+    let temp  = document.getElementsByClassName('rgtItm');
+
+    let i = 0;
+    for(let iter of temp){
+        iter.appendChild(createTodoDial(iter, i, 'trashSVG', '2em'));
+        iter.appendChild(createTodoDial(iter, i, 'pencilSVG', '4.5em'));
+        i++;
+    }
+}
+
+function createTodoDial(telm, i, svgId, rightSpot){
+    let temp2 = document.createElement('div');
+    let tomp = document.getElementById(svgId);
+    let clone = tomp.cloneNode(true);
+
+    clone.id = '';
+    tomp = clone;
+    temp2.classList.add('liCir');
+    temp2.appendChild(tomp);
+
+    temp2.value = i;
+
+    if(svgId == "trashSVG"){
+        temp2.onclick = () =>{
+            removeTodo(temp2.value);
+            telm.style.transform = 'rotateX(90deg)'
+            telm.style.height = '0';
+            setTimeout(function(){
+                telm.style.display = 'none';
+            },200)
+        }
+    }
+    else if(svgId == "pencilSVG"){
+        temp2.onclick = () =>{
+            let query = telm.querySelector('p');
+            query.contentEditable = true;
+            query.focus();
+            document.getElementsByClassName('rgtItm')[temp2.value].classList.add('highlight');
+            query.oninput = () =>{
+                setTodo(temp2.value, query.innerHTML)
+            }
+            query.onblur = () =>{
+                document.getElementsByClassName('rgtItm')[temp2.value].classList.remove('highlight');
+                query.contentEditable = false;
+            }
+            window.getSelection().selectAllChildren(query);
+        }
+    }
+
+    temp2.style.right = rightSpot;
+
+    return(temp2)
+}
+
+function setTodo(idx, val){
+    listObjs[currentLi].todos[idx].inner = val;
 }
 
 function openLiBtn(){
@@ -119,12 +399,13 @@ function updateLiText(value){
 function addList(liName){
     if(liName == undefined)
         liName = liText;
-    tempObj = {name: liName, todos: [{inner: "This is a example task!", completed: false}]};
+    tempObj = {name: liName, todos: [{inner: "This is a example task!", completed: false}], nodeBlockWindow: [], NBW_open: false};
     listObjs[Object.keys(listObjs).length] = tempObj;
     load("WITH SAVE");
 }
 
 function save(){
+    listObjs[currentLi].nodeBlockWindow = selectedNodes;
     localStorage.setItem("newSave", JSON.stringify(listObjs));
     console.log("SAVE: Sucessfuly saved:")
     console.log(JSON.parse(localStorage.getItem("newSave")));
@@ -132,12 +413,12 @@ function save(){
 }
 
 function autoSave(){
+    listObjs[currentLi].nodeBlockWindow = selectedNodes;
     localStorage.setItem("autoSave", JSON.stringify(listObjs));
     console.log("AUTOSAVE: Sucessfuly saved:")
     console.log(JSON.parse(localStorage.getItem("autoSave")));
     localStorage.setItem("lastSaveType", "autoSave");
 }
-
 
 function updateCheckbox(thisId, thisBool){
     listObjs[currentLi].todos[thisId].completed = thisBool;
@@ -164,12 +445,6 @@ function updateScope(value, that, type){
 function removeTodo(idx){
     listObjs[currentLi].todos[idx] = undefined;
     listObjs[currentLi].todos = collapseArray(listObjs[currentLi].todos);
-    // if(idx == currentLi)
-    // animateToLoad(scopeTarg, 200, true, false);
-    //     else if(idx < currentLi)
-    // animateToLoad(scopeTarg, 200, false, true);
-    //     else
-    // animateToLoad(scopeTarg, 200, false, false)
 }
 
 function removeList(idx){
@@ -243,7 +518,7 @@ function rcFun(which){
 }
 
 function addTodo(insideText, insertQ){
-    let tomp = { inner: insideText, completed: false};
+    let tomp = { inner: insideText};
     if(insertQ == undefined)
         listObjs[currentLi].todos.push(tomp);
     else{
@@ -257,12 +532,8 @@ function insert(tary, idx, items){
     return tary1.concat(tary.slice(idx));
 }
 
-function debug(value){
-    console.log(value);
-}
-
 function selectText(targ) {
     window.getSelection().selectAllChildren(targ.children[0]);
-  }
-
+}
   
+liBtn.style.display = "block";

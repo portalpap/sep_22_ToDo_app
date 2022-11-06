@@ -1,3 +1,4 @@
+/*
 const ctxWindow = document.getElementById('contentWindow');
 const nodeTainer = document.getElementById('nodeTainer');
 const canvas = document.querySelector('#canvas');
@@ -36,6 +37,8 @@ let nodeScopeElm;
 let curNS_Obj;
 let curNS_Elm;
 let scopeLockedQ = false;
+let pubQ = false;
+*/
 
 document.onmousedown = () =>{ 
     mouseDownQ = true;
@@ -44,21 +47,34 @@ document.onmousedown = () =>{
     };
 document.onclick = (e) => {
     if(prevCamX == camX && prevCamY == camY)
-        if(!e.target.classList.contains('nodeItem'))
-            clearFocus();
+        if(!e.target.classList.contains('nodeItem')){
+            if(!scopeLockedQ)
+                clearFocus();
+            scopeLockedQ = false;
+            drawGrid();
+            drawBlockAllies();
+        }
 }
 document.onmouseup = () =>{
     mouseDownQ = false;
     camXorigin = undefined;
     camYorigin = undefined;
 };
-canvas.onmousedown = (e) => { 
+ctxTainer.onmousedown = (e) => { 
     camXorigin = e.pageX + camX;
     camYorigin = e.pageY + camY;
 };
-window.onmousemove = mouseMove;
-ctxWindow.onwheel     = gridZoom;
 
+function toggleWindow(){
+    toggle(ctxButton, "openQ");
+    CWTainerOpenQ = toggle(ctxTainer, "openQ");
+    listObjs[currentLi].NBW_open = CWTainerOpenQ;
+}
+
+window.onmousemove = mouseMove;
+ctxWindow.onwheel  = gridZoom;
+
+/*
 class Nodec{ // Node Class
     constructor(label, x, y, children){
         this.label = label;
@@ -80,7 +96,7 @@ class Nodec{ // Node Class
         this.gridH = nh;
     }
 }
-let selectedNodes = [];
+
 selectedNodes.push(new Nodec("Default",0,-9));
 selectedNodes.push(new Nodec("added", -20, 0));
 selectedNodes.push(new Nodec("added", 0, 9));
@@ -94,7 +110,7 @@ selectedNodes[2].addAlly(selectedNodes[3])
 selectedNodes[2].addAlly(selectedNodes[4])
 selectedNodes[0].addAlly(selectedNodes[4])
 selectedNodes[0].addAlly(selectedNodes[5])
-
+*/
 
 document.onmousemove = drawConnect;
 
@@ -103,29 +119,29 @@ function drawGrid(){
     ctx.beginPath();
     ctx.lineWidth = gridSize/80;
 
+    let lineOffset = 0;
     ctx.strokeStyle = 'green';
-
     let temp = 0;
-    let tempMod = window_W - (window_W % gridSize) + gridSize;
+    let tempMod = window_W - (window_W % gridSize);
 
     for (let i = 0; i <= window_W/gridSize; i++) { //colums
         temp = 
-        ((((window_W - i) * gridSize) + camX + offsetX) 
+        (((i * gridSize) + clamp(offsetX + camX, 0, window_W)) 
         % tempMod);
 
-        ctx.moveTo(temp + gridSize/(20), window_H);
-        ctx.lineTo(temp + gridSize/(20), 0);
+        ctx.moveTo(temp, window_H);
+        ctx.lineTo(temp, 0);
     }
 
-    tempMod = window_H - (window_H % gridSize) + gridSize;
+    tempMod = window_H - (window_H % gridSize);
 
     for (let i = 0; i <= window_H/gridSize; i++) { //rows
         temp = 
-        ((((window_H - i) * gridSize) + camY + offsetY) 
+        ((((i) * gridSize) + clamp(offsetY + camY, 0, window_H)) 
         % tempMod);
 
-        ctx.moveTo(window_W, temp  + gridSize/(20));
-        ctx.lineTo(0, temp  + gridSize/(20));
+        ctx.moveTo(window_W, temp );
+        ctx.lineTo(0, temp );
     }
     ctx.stroke();
 
@@ -133,14 +149,14 @@ function drawGrid(){
     ctx.strokeStyle = 'red';
 
     ctx.beginPath();
-    ctx.moveTo(camX + offsetX + gridSize/(20), 0);
-    ctx.lineTo(camX + offsetX + gridSize/(20), window_H)
+    ctx.moveTo(camX + offsetX + lineOffset, 0);
+    ctx.lineTo(camX + offsetX + lineOffset, window_H)
     ctx.stroke();
 
     ctx.strokeStyle = 'blue';
     ctx.beginPath();
-    ctx.moveTo(0       , camY + offsetY + gridSize/(20));
-    ctx.lineTo(window_W, camY + offsetY + gridSize/(20))
+    ctx.moveTo(0       , camY + offsetY + lineOffset);
+    ctx.lineTo(window_W, camY + offsetY + lineOffset)
     ctx.stroke();
 
 }
@@ -148,9 +164,15 @@ function drawGrid(){
 function drawConnect(fx,fy,sx,sy, lineColor){
     if(lineColor == undefined) lineColor = 'red';
     ctx.lineWidth = gridSize/6;
+    if(pubQ){
+       ctx.lineWidth = gridSize/2;
+       lineColor = 'orange';
+       if(curNS_Obj != nodeScopeObj && curNS_Obj != undefined)
+        lineColor = 'yellow'
+    }
     let temp = undefined;
     fy += gridSize/24;
-    // sx = window.event.pageX - canvas.getBoundingClientRect().x;
+    // sx = window.event.pageX   - canvas.getBoundingClientRect().x;
     // sy = window.event.pageY - canvas.getBoundingClientRect().y;
     if(sx < fx){
         temp = fx;
@@ -171,8 +193,33 @@ function drawConnect(fx,fy,sx,sy, lineColor){
     ctx.stroke();
 }
 
-function checkUpdate(){
+function searchForAlly(){
+    let fxx = nodeScopeObj.gridW * gridSize;
+    let fyy = nodeScopeObj.gridH/2 * gridSize;
+    let sxx = windowMouseX;
+    let syy = windowMouseY;
 
+    let temp = document.getElementById(nodeScopeObj.id);
+
+    fxx += Number((temp.style.left).slice(0, -2));
+    fyy += Number((temp.style.top).slice(0, -2));
+    pubQ = true;
+    for(let iter of ctxWindow.getElementsByClassName("yellow"))
+        iter.classList.remove("yellow");
+    if(curNS_Obj == nodeScopeObj || curNS_Obj == undefined){
+        connectNode(nodeScopeObj, nodeScopeObj);
+
+    }
+    else if(scopeLockedQ){
+        pubQ = "falsey";
+        curNS_Elm.classList.add("yellow");
+        nodeScopeElm.classList.add("yellow");
+        connectNode(curNS_Obj, nodeScopeObj);
+    }
+    pubQ = false;
+}
+
+function checkUpdate(){
     camX = clamp(camX,((xCellCount/-2) * gridSize), ((xCellCount/2) * gridSize));
 
     for(let iter of selectedNodes){
@@ -220,21 +267,31 @@ function connectNode(n1, n2){
     let bullTop = 50;
     let bullLeft = 0;
 
+    sox = n2.xCell
+    soy = n2.yCell
+    now = n2.gridW;
+    noh = n2.gridH;
+    if(pubQ && pubQ != "falsey"){
+        sox = getCellX(windowMouseX);
+        soy = getCellY(windowMouseY);
+        now = -3;
+        noh = -3;
+    }
 
-    if(n1.xCell < n2.xCell){
+    if(n1.xCell < sox){
         // console.log("1 right - 2 left");
         bullLeft = 100;
         fxx = n1.gridW * gridSize;
     }
     else{
         // console.log("1 left - 2 right");
-        sxx = n2.gridW * gridSize;
+        sxx = now * gridSize;
     }
-    if(n2.xCell + (n2.gridW/2) + 1 >= n1.xCell - (n1.gridW/2)
-     && n2.xCell - (n2.gridW/2) <= n1.xCell + (n1.gridW/2) + 1){
-        if(n2.yCell + (n2.gridH/2) >= n1.yCell){
+    if(sox + (now/2) + 1 >= n1.xCell - (n1.gridW/2)
+     && sox - (now/2) <= n1.xCell + (n1.gridW/2) + 1){
+        if(soy + (noh/2) >= n1.yCell){
             bullTop = 0;
-            syy = n2.gridH * gridSize
+            syy = noh * gridSize
             fyy = 0;
         }
         else{
@@ -242,16 +299,18 @@ function connectNode(n1, n2){
             syy = 0;
             fyy = n1.gridH * gridSize;
         }
-        bullLeft = "50"
+        bullLeft = 50;
         fxx = n1.gridW/2 * gridSize;
-        sxx = n2.gridW/2 * gridSize;
+        sxx = now/2 * gridSize;
     }
 
     let b1 = document.getElementById(n1.id);
     let b2 = document.getElementById(n2.id);
 
-    b1.getElementsByClassName('nCir')[0].style.left = "calc("+bullLeft+"% - 3.5px)";
-    b1.getElementsByClassName('nCir')[0].style.top = "calc("+bullTop+"% - 3.5px)";
+    let myBullet = b1.getElementsByClassName('nCir')[0]
+
+    myBullet.style.left = bullLeft+'%';
+    myBullet.style.top = bullTop+'%';
 
     // console.log(b1);
     // console.log(b2);
@@ -260,7 +319,15 @@ function connectNode(n1, n2){
     sxx += Number((b2.style.left).slice(0, -2));
     syy += Number((b2.style.top ).slice(0, -2));
 
-
+    if(pubQ && pubQ != "falsey"){
+        sxx = windowMouseX;
+        syy = windowMouseY;
+        if(bullTop == 0)
+        if(syy > fyy + (n1.gridH * gridSize/2))
+            fyy += (n1.gridH * gridSize);
+    }
+    if(pubQ == "falsey")
+        pubQ = true;
 
     drawConnect(fxx, fyy, sxx, syy, n1.strandColor);
 }
@@ -281,11 +348,15 @@ function mouseMove(event){
 
 function updateStrandAnimation(){
     if(scopeLockedQ){
-        if(curNS_Obj != nodeScopeObj && curNS_Obj != undefined && mouseDownQ){
+        if(curNS_Obj != nodeScopeObj && curNS_Obj != undefined && mouseDownQ && prevCamX == camX && !nodeDragingQ){
             scopeLockedQ = false;
             nodeScopeObj.addAlly(curNS_Obj);
-        }
-        else{
+            drawGrid();
+            curNS_Elm.classList.add("highlighted");
+            nodeScopeElm.classList.add("highlighted");
+            for(let iter of ctxWindow.getElementsByClassName("yellow"))
+                iter.classList.remove("yellow");
+            drawBlockAllies();
         }
         searchForAlly();
     }
@@ -314,7 +385,6 @@ function renderNode(inpot){
     tomp.style.setProperty('--myTextColor' , 'rgb(255, 255, 255)');
 
     nodeTainer.onclick = () => {
-
         if(pubInpot.xCell == prevNx)
             pubElem.classList.add('highlighted')
     };
@@ -344,6 +414,8 @@ function renderNode(inpot){
 
     let nodeConnectBullet = document.createElement('div');
     nodeConnectBullet.classList.add('nCir');
+    nodeConnectBullet.style.width  = temp/2 + 'px';
+    nodeConnectBullet.style.height = temp/2 + 'px';
     nodeConnectBullet.onclick = () => {
         pubElem.classList.add('highlighted')
         nodeScopeElm = curNS_Elm;
@@ -361,6 +433,10 @@ function renderNode(inpot){
 
     addClassesToAllChildren("nodeItem", tomp);
 
+    tomp.style.outlineWidth = temp/5 + 'px';
+    tomp.style.outlineOffset = temp/-10 + 'px';
+    tomp.style.borderRadius = temp/2 + 'px';
+
     nodeTainer.appendChild(tomp)
     updateNode(inpot);
 }
@@ -370,8 +446,15 @@ function addNodeDial(key, dialY, inpot){
 
     let temp2 = document.createElement('div');
     temp2.classList.add('nodeOption')
+    let dialSize = offsetX/inpot.gridW;
+    console.log();
+    temp2.style.width = (inpot.gridH * dialSize)/10 +'px';
+    temp2.style.height = (inpot.gridH * dialSize)/10 +'px';
+    temp2.value = dialY;
+
+
     temp2.style.transform = 
-    "translate("+(24 + gridSize)+"px, "+(gridSize + 24) * dialY+"px)"
+    "translate("+(dialSize)+"px, "+(dialSize) * dialY+"px)"
 
     switch (key) {
         case "color":
@@ -445,24 +528,6 @@ function addNodeDial(key, dialY, inpot){
     return temp2;
 }
 
-function searchForAlly(){
-    let fxx = nodeScopeObj.gridW * gridSize;
-    let fyy = nodeScopeObj.gridH/2 * gridSize;
-    let sxx = windowMouseX;
-    let syy = windowMouseY;
-
-    let temp = document.getElementById(nodeScopeObj.id);
-
-    fxx += Number((temp.style.left).slice(0, -2));
-    fyy += Number((temp.style.top).slice(0, -2));
-    if(curNS_Obj == nodeScopeObj || curNS_Obj == undefined){
-        drawConnect(fxx, fyy, sxx, syy);
-    }
-    else{
-        connectNode(curNS_Obj, nodeScopeObj);
-    }
-}
-
 function addClassesToAllChildren(inpct, nBlock){
     for(let iter of nBlock.children){
         iter.classList.add(inpct);
@@ -483,11 +548,34 @@ function addAllNodeElements(){
 function updateNode(inpot){
     const elem = document.getElementById(inpot.id);
 
+    if(curKey == 16 && inpot == curNS_Obj){
+        inpot.xCell = Math.round(inpot.xCell);
+        inpot.yCell = Math.round(inpot.yCell);
+    }
+
+    // for(let iter of elem.getElementsByClassName('nodeOption')){
+    // let dialSize = gridSize * 2
+    // iter.style.width = dialSize +'px';
+    // iter.style.height = dialSize +'px';
+    // iter.style.transform = 
+    // "translate("+(gridSize + dialSize)+"px, "+(gridSize + dialSize) * iter.value+"px)"
+    // }
+
     elem.style.display = "flex";
     elem.style.left    = (inpot.xCell * gridSize) + camX + (offsetX - (inpot.gridW * gridSize)/2) + "px";
     elem.style.top     = (inpot.yCell * -gridSize) + camY + (offsetY - (inpot.gridH * gridSize)/2) + "px";
 
+
     elem.style.transform = "scale("+(inpot.gridW * gridSize)/(offsetX/inpot.gridW)/inpot.gridW+")";
+}
+
+let curKey = 0;
+
+document.onkeydown = () => {
+    curKey = window.event.keyCode;
+}
+document.onkeyup   = () => {
+    curKey = 0;
 }
 
 function hideNode(inpot){
@@ -496,20 +584,20 @@ function hideNode(inpot){
 }
 
 function gridZoom(e){
-    camX = clamp(camX,((xCellCount/-2) * gridSize), ((xCellCount/2) * gridSize));
+        camX = clamp(camX,((xCellCount/-2) * gridSize), ((xCellCount/2) * gridSize));
 
-    let tempX = Math.round(getCellX(windowMouseX)/.25)*.25;
-    let tempY = Math.round(getCellY(windowMouseY)/.25)*.25;
+        let tempX = Math.round(getCellX(windowMouseX)/.25)*.25;
+        let tempY = Math.round(getCellY(windowMouseY)/.25)*.25;
 
-    gridSize += clamp(e.wheelDelta, -1, 1);
-    temp = Math.max(window_W/xCellCount, window_H/yCellCount/2);
-    gridSize = clamp(gridSize, minZoom, maxZoom);
+        gridSize += clamp(e.wheelDelta, -1, 1);
+        temp = Math.max(window_W/xCellCount, window_H/yCellCount/2);
+        gridSize = clamp(gridSize, minZoom, maxZoom);
 
-    camX  = (-gridSize * tempX + (windowMouseX - offsetX));
-    camY  = (gridSize * tempY + (windowMouseY - offsetY));
+        camX  = (-gridSize * tempX + (windowMouseX - offsetX));
+        camY  = (gridSize * tempY + (windowMouseY - offsetY));
 
-    checkUpdate();
-    updateStrandAnimation();
+        checkUpdate();
+        updateStrandAnimation();
 }
 
 function moveCamera(event){
@@ -537,6 +625,18 @@ function getCellY(targY, specialSize){
     return (((targY - camY - offsetY)/-specialSize));
 }
 
-addAllNodeElements();
-checkUpdate();
+function scaleCtxWindow(){
+    window_W = ctxWindow.getBoundingClientRect().width;
+    window_H = ctxWindow.getBoundingClientRect().height;
+    offsetX = window_W/2;
+    offsetY = window_H/2;
+    canvas.width = window_W;
+    canvas.height = window_H;
+    addAllNodeElements();
+    checkUpdate();
+}
 
+addAllNodeElements();
+scaleCtxWindow();
+checkUpdate();
+// console.log(selectedNodes);

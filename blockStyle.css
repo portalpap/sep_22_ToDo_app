@@ -1,3 +1,45 @@
+#CWTainer{
+    margin-bottom: 1em;
+    overflow: hidden;
+    transition: .2s;
+    height: 400px;
+}
+#CWTainer.openQ{
+    height: 26px;
+}
+#CWTainer #ctxWindowBtn{
+    position: absolute;
+    z-index: 999;
+    border: none;
+    display: flex;
+    padding: 2px;
+    width: 22px;
+    height: 16px;
+    margin: 4px 3px;
+}
+#CWTainer #ctxWindowBtn .CWB-bar{
+    width: 10px;
+    height: 5px;
+    background-color: white;
+    transition: .2s ease-out;
+}
+#CWTainer #ctxWindowBtn.openQ .CWB-l{
+    transform-origin: bottom left;
+    transform: rotate(45deg) scaleX(1.3);
+}
+#CWTainer #ctxWindowBtn.openQ .CWB-r{
+    transform-origin: bottom right;
+    transform: rotate(-45deg) scaleX(1.42);
+}
+#CWTainer #ctxWindowBtn .CWB-l{
+    transform-origin: top right;
+    transform: rotate(-45deg) scaleX(1.42);
+}
+#CWTainer #ctxWindowBtn .CWB-r{
+    transform-origin: top left;
+    transform: rotate(45deg) scaleX(1.42) translateY(-.5px);
+}
+
 .svgCollection{
     display: none;
     position: absolute;
@@ -21,6 +63,10 @@
     color: var(--myTextColor);
     box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
 }
+.nodeOption svg{
+    width: 80%;
+    height: 80%;
+}
 .nodeOption input{
     box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset, rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset, rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
     aspect-ratio: 1/1;
@@ -28,11 +74,12 @@
     filter: opacity(0);
 }
 .nodeBlock .nCir{
+    transform: translateX(-50%) translateY(-50%);
     z-index: 4;
     transition: width .2s, height .2s, transform .2s;
     position: absolute;
-    top: calc(50% - 3.5px);
-    left: calc(100% - 3.5px);
+    top: 50%;
+    left: 100%;
     outline: 5px ;
     width: 10px;
     height: 10px;
@@ -43,9 +90,7 @@
     box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
 }
 .nodeBlock .nCir:hover, .nCir.highlighted{
-    width: 15px;
-    height: 15px;
-    transform: translate(-2.5px, -2.5px);
+    transform: scale(1.3) translateX(-35%) translateY(-35%);
 }
 .nodeOption *{
     margin: 0;
@@ -54,6 +99,9 @@
 .nodeBlock:not(.highlighted) .nodeOption{
     display: none;
     background-color: red;
+}
+.nodeBlock.yellow{
+    outline: 5px yellow dashed;
 }
 textarea{
     resize: none;
@@ -85,10 +133,10 @@ textarea.nodeItem{
     outline: var(--myNodeColor) 3px ridge;
     z-index: 0;
 }
-.nodeBlock.highlighted{
+/* .nodeBlock.highlighted{
     outline-width: 6px;
     outline-offset: -2px;
-}
+} */
 .nodeGut, .nodeBlock{
     cursor:grab;
 }
@@ -105,10 +153,11 @@ textarea.nodeItem{
 }
 #contentWindow{
     height: 400px;
-    width: 500px;
+    width: 100%px;
     background-color: rgb(20, 20, 20);
     overflow: hidden;
     position: relative;
+    border-radius: 2px;
 }
 #canvas{
     width: 100%;
