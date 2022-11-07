@@ -11,14 +11,31 @@ const toggle = (that, chosenClass) => {
     }
 };
 
+
+
+function collapseArray(collapseArrayValue){
+    let collapseArrayTemp = [];
+    for (let iter of collapseArrayValue) 
+        if(iter != undefined)
+            collapseArrayTemp.push(iter);
+    return collapseArrayTemp;
+}
+function turnObjectToNodec(inpot){
+    let todec = new Nodec();
+    for(let props of Object.getOwnPropertyNames(inpot)){
+        todec[props] = inpot[props];
+    }
+    return(todec);
+}
+
 /*-----------------------------------------------------*/
 
 class Nodec{ // Node Class
     constructor(label, x, y, children){
         this.label = label;
+        this.id;
         this.xCell = x;
         this.yCell = y;
-        this.id;
         this.gridW = 8;
         this.gridH = 6; 
         this.basicText = '';
@@ -27,11 +44,22 @@ class Nodec{ // Node Class
         this.strandColor = '#ff0000';
     }
     addAlly(inpot){
-        this.allies.push(inpot);
+        if(!this.allies.hasOwnProperty(inpot))
+            this.allies.push(inpot);
     }
     changeBounds(nw, nh){
         this.gridW = nw;
         this.gridH = nh;
+    }
+    removeAlly(inpot){
+        let i = 0;
+        for(let iter of this.allies){
+            if(iter.id == inpot.id){
+                this.allies[i] = undefined;
+                this.allies = collapseArray(this.allies);
+            }
+            i++;
+        }
     }
 }
 

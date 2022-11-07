@@ -246,7 +246,10 @@ let listObjs = {
     }
 };
 
+// let temper = listObjs[0].nodeBlockWindow;
+
 load("INIT");
+
 
 function load(Ltype){
     if(Ltype == "INIT"){
@@ -299,12 +302,17 @@ function load(Ltype){
         ctxTainer.classList.add('openQ');
         ctxButton.classList.add('openQ');
     }
+
+    // listObjs[0].nodeBlockWindow = temper;
     for(let iter of listObjs[currentLi].nodeBlockWindow){
-        let todec = new Nodec();
-        for(let props of Object.getOwnPropertyNames(iter))
-            todec[props] = iter[props];
-        selectedNodes.push(todec);
+        let ii = 0;
+        for(let allies of iter.allies){
+            iter.allies[ii] = turnObjectToNodec(allies);
+            ii++;
+        }
+        selectedNodes.push(turnObjectToNodec(iter));
     }
+
     setTimeout(function(){
         ctxTainer.style.transition = ".2s ease-out";
         for(let iter of ctxButton.children)
@@ -474,14 +482,6 @@ function animateToLoad(targObj, delay, isActive, isLess, isTodo){
     }
     else
         setTimeout(load, delay);
-}
-
-function collapseArray(collapseArrayValue){
-    let collapseArrayTemp = [];
-    for (let i = 0; i < Object.keys(collapseArrayValue).length; i++) 
-        if(collapseArrayValue[i] != undefined)
-            collapseArrayTemp.push(collapseArrayValue[i]);
-    return collapseArrayTemp;
 }
 
 function rcFun(which){

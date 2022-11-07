@@ -122,22 +122,22 @@ function drawGrid(){
     let lineOffset = 0;
     ctx.strokeStyle = 'green';
     let temp = 0;
-    let tempMod = window_W - (window_W % gridSize);
+    let tempMod = window_W - (window_W % gridSize) + gridSize;
 
     for (let i = 0; i <= window_W/gridSize; i++) { //colums
         temp = 
-        (((i * gridSize) + clamp(offsetX + camX, 0, window_W)) 
+        (((i * gridSize) + clamp(offsetX + camX % gridSize, 0, window_W)) 
         % tempMod);
 
         ctx.moveTo(temp, window_H);
         ctx.lineTo(temp, 0);
     }
 
-    tempMod = window_H - (window_H % gridSize);
+    tempMod = window_H - (window_H % gridSize) + gridSize;
 
     for (let i = 0; i <= window_H/gridSize; i++) { //rows
         temp = 
-        ((((i) * gridSize) + clamp(offsetY + camY, 0, window_H)) 
+        ((((i) * gridSize) + clamp(offsetY + camY % gridSize, 0, window_H)) 
         % tempMod);
 
         ctx.moveTo(window_W, temp );
@@ -208,7 +208,6 @@ function searchForAlly(){
         iter.classList.remove("yellow");
     if(curNS_Obj == nodeScopeObj || curNS_Obj == undefined){
         connectNode(nodeScopeObj, nodeScopeObj);
-
     }
     else if(scopeLockedQ){
         pubQ = "falsey";
@@ -232,8 +231,9 @@ function checkUpdate(){
 
 function drawBlockAllies(){
     for(let iter of selectedNodes)
-        for(let allies of iter.allies)
+        for(let allies of iter.allies){
             connectNode(iter, allies);
+        }
 }
 
 function startDrag(that, inpot){
@@ -367,6 +367,7 @@ function renderNode(inpot){
 
     let tomp2 = document.createElement('textarea');
     tomp2.classList.add('nodeGut');
+    tomp2.style.fontSize = (offsetX/inpot.gridW)/2 + 'px'
     tomp2.oninput = () => inpot.basicText = tomp2.value;
     tomp.onmouseover = () =>{
         curNS_Obj = inpot;
@@ -514,8 +515,7 @@ function addNodeDial(key, dialY, inpot){
             temp = clone;
             temp.onclick = () => {
                 if(confirm("Do You Want To Delete This Node?")){
-                    selectedNodes[selectedNodes.indexOf(inpot)] = undefined;
-                    selectedNodes = collapseArray(selectedNodes);
+                    deleteNodeObj(inpot);
                     addAllNodeElements();
                 }
             };
@@ -526,6 +526,21 @@ function addNodeDial(key, dialY, inpot){
     temp2.appendChild(temp);
 
     return temp2;
+}
+
+function deleteNodeObj(inpot){
+    let targIdx = Number((inpot.id).slice(9));
+    for(let iter of selectedNodes){
+        iter.removeAlly(inpot);
+        for(let aly of iter.allies){
+            if(Number(aly.id.slice(9)) > targIdx){
+                aly.id = aly.id.slice(0,9) + (Number(aly.id.slice(9)) - 1);
+            }
+        }
+    }
+
+    selectedNodes[selectedNodes.indexOf(inpot)] = undefined;
+    selectedNodes = collapseArray(selectedNodes);
 }
 
 function addClassesToAllChildren(inpct, nBlock){
@@ -636,7 +651,7 @@ function scaleCtxWindow(){
     checkUpdate();
 }
 
+
 addAllNodeElements();
 scaleCtxWindow();
 checkUpdate();
-// console.log(selectedNodes);
