@@ -368,7 +368,8 @@ function renderNode(inpot){
     let tomp2 = document.createElement('textarea');
     tomp2.classList.add('nodeGut');
     tomp2.style.fontSize = (offsetX/inpot.gridW)/2 + 'px'
-    tomp2.oninput = () => inpot.basicText = tomp2.value;
+    tomp2.value = inpot.basicText;
+    tomp2.oninput = () =>{ inpot.basicText = tomp2.value};
     tomp.onmouseover = () =>{
         curNS_Obj = inpot;
         curNS_Elm = tomp;
